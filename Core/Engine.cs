@@ -194,6 +194,11 @@ namespace OOPProject.Core
                                 }                             
 
                             }
+                            if (isThereException && (field[playerRowIndex - 2, playerColIndex] != border.ToString()))
+                            {
+                                Console.Clear();
+                                isThereException = false;
+                            }
                         }
                     }
                     catch (Exception)
@@ -317,6 +322,11 @@ namespace OOPProject.Core
                                 }
 
                             }
+                            if (isThereException && (field[playerRowIndex + 2, playerColIndex] != border.ToString()))
+                            {
+                                Console.Clear();
+                                isThereException = false;
+                            }
                         }
                     }
                     catch (Exception)
@@ -439,6 +449,11 @@ namespace OOPProject.Core
                                 }                             
 
                             }
+                            if (isThereException && (field[playerRowIndex, playerColIndex + 1] != border.ToString()))
+                            {
+                                Console.Clear();
+                                isThereException = false;
+                            }
                         }
                     }
                     catch (Exception)
@@ -560,6 +575,11 @@ namespace OOPProject.Core
                                     isPlayerInWater = false;
                                 }
 
+                            }
+                            if (isThereException && (field[playerRowIndex, playerColIndex - 1] != border.ToString()))
+                            {
+                                Console.Clear();
+                                isThereException = false;
                             }
                         }
                     }
