@@ -1,6 +1,7 @@
 ﻿using OOPProject.Core.Contracts;
 using OOPProject.Models;
 using OOPProject.Models.Contracts;
+using OOPProject.Movement;
 using OOPProject.Utilities.EmojiImages;
 using System;
 using System.Collections.Generic;
@@ -47,16 +48,14 @@ namespace OOPProject.Core
             }
 
             int radius = rowCount / 4;
-
             string[,] circlefield = GenerateCircleMatrix(radius, ref circleFieldCount);
 
             Animal player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == wantedAnimalId);
 
             Console.WriteLine("Insert npc animals count:");
             int maxCountNpcAnimals = ((rowCount - 2) * (columnCount - 2)) - 1;
+
             int npcCount = int.Parse(Console.ReadLine());
-
-
             while (maxCountNpcAnimals < npcCount)
             {
                 Console.WriteLine($"Too much animals! The max capacity animals is {maxCountNpcAnimals}");
@@ -84,18 +83,19 @@ namespace OOPProject.Core
                 {
                     try
                     {
+
                         if (player.LandType == "Terrestrial")
                         {
                             if (!(field[playerRowIndex - 2, playerColIndex] == border.ToString()))
                             {
-                                if ((field[playerRowIndex - 1, playerColIndex] == EmojiList.Water 
+                                if ((field[playerRowIndex - 1, playerColIndex] == EmojiList.Water
                                     || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])) && player.LandType == "Terrestrial")
                                 {
                                     RemoveTheFirstRowAfterTheField(field);
                                     Console.WriteLine("You cannot go that way!");
                                     continue;
                                 }
-                                else if (terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]) 
+                                else if (terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])
                                     || bothAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]))
                                 {
                                     string enemyEmoji = field[playerRowIndex - 1, playerColIndex];
@@ -117,7 +117,7 @@ namespace OOPProject.Core
                         }
                         else if (player.LandType == "Aquatic")
                         {
-                            if ((field[playerRowIndex - 1, playerColIndex] == "  " 
+                            if ((field[playerRowIndex - 1, playerColIndex] == "  "
                                 || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])) && player.LandType == "Aquatic")
                             {
                                 RemoveTheFirstRowAfterTheField(field);
@@ -140,19 +140,20 @@ namespace OOPProject.Core
 
                         }
                         else if (player.LandType == "Both")
-                        {           
+                        {
                             if (!(field[playerRowIndex - 2, playerColIndex] == border.ToString()))
-                            {                 
-                                if (field[playerRowIndex - 1, playerColIndex] == EmojiList.Water 
-                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]) 
+                            {
+                                if (field[playerRowIndex - 1, playerColIndex] == EmojiList.Water
+                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])
                                     || bothAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]))
-                                {                    
+                                {
                                     string enemyEmoji = field[playerRowIndex - 1, playerColIndex];
 
                                     if (!AnimalInteraction(field, animalList, player, enemyEmoji))
                                     {
                                         continue;
-                                    }                          
+                                    }
+
                                     if (IsEntityInWater(field, playerRowIndex, playerColIndex))
                                     {
                                         isPlayerInWater = true;
@@ -169,9 +170,8 @@ namespace OOPProject.Core
                                     field[playerRowIndex, playerColIndex] = player.Emoji;
                                     isPlayerInWater = true;
                                 }
-
-                                else if (field[playerRowIndex - 1, playerColIndex] == "  " 
-                                    || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]) 
+                                else if (field[playerRowIndex - 1, playerColIndex] == "  "
+                                    || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])
                                     || bothAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]))
                                 {
                                     string enemyEmoji = field[playerRowIndex - 1, playerColIndex];
@@ -179,7 +179,7 @@ namespace OOPProject.Core
                                     if (!AnimalInteraction(field, animalList, player, enemyEmoji))
                                     {
                                         continue;
-                                    }               
+                                    }
                                     if (isPlayerInWater)
                                     {
                                         field[playerRowIndex, playerColIndex] = EmojiList.Water;
@@ -187,11 +187,11 @@ namespace OOPProject.Core
                                     else
                                     {
                                         field[playerRowIndex, playerColIndex] = "  ";
-                                    }                                 
+                                    }
                                     playerRowIndex--;
                                     field[playerRowIndex, playerColIndex] = player.Emoji;
                                     isPlayerInWater = false;
-                                }                             
+                                }
 
                             }
                             if (isThereException && (field[playerRowIndex - 2, playerColIndex] != border.ToString()))
@@ -944,6 +944,7 @@ namespace OOPProject.Core
         //CircleField     
         static string[,] GenerateCircleMatrix(int radius, ref int circleFieldCount)
         {
+
             int size = radius * 2 + 1;
             string[,] matrix = new string[size, size];
 
@@ -991,6 +992,11 @@ namespace OOPProject.Core
             }
         }
 
+
+
+
+
+        
     }
 }
     
