@@ -9,12 +9,20 @@ namespace OOPProject.Utilities
 {
     public class HelpfulCommands
     {
+        public static void RemoveTheFirstRowAfterTheField(string[,] field)
+        {
+            Console.SetCursorPosition(0, field.GetLength(0));
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, field.GetLength(0));
+        }
+
         public static void RemoveTheSecondRowAfterTheField(string[,] field)
         {
             Console.SetCursorPosition(0, field.GetLength(0) + 1);
             Console.Write(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, field.GetLength(0) + 1);
         }
+
 
         public static bool BattleInteraction(string[,] field, AnimalList animalList, Animal player, string enemyEmoji)
         {

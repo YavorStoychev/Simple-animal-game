@@ -1,6 +1,7 @@
 ﻿using OOPProject.Models;
 using OOPProject.Models.Contracts;
 using OOPProject.Utilities.EmojiImages;
+using OOPProject.Utilities.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,7 +82,7 @@ namespace OOPProject.Utilities.PlayerUtilities
             return sb.ToString().TrimEnd();
         }
 
-       public static bool BattleInteraction(string[,] field, AnimalList animalList, Animal player, string enemyEmoji)
+       public static bool BattleInteraction(string[,] field, AnimalList animalList, Animal player, string enemyEmoji)//Need a fix
         {
             Animal enemy = animalList.AddedAnimalList.FirstOrDefault(x => x.Emoji == enemyEmoji);
 
@@ -101,14 +102,14 @@ namespace OOPProject.Utilities.PlayerUtilities
                 else if ((player.Hp + player.Defence) <= (enemy.Hp + enemy.Defence))
                 {
                     HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-                    Console.WriteLine("You cannot kill that animal!");
+                    Console.WriteLine(OutputMessages.CannotKillAnimal);
                     return false;
                 }
             }
             else if (player.LandType != enemy.LandType)
             {
                 HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-                Console.WriteLine("You cannot interfere with this animal!");
+                Console.WriteLine(OutputMessages.CannotInterfere);
                 return false;
             }
 

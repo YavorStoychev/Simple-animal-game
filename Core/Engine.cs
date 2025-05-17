@@ -5,6 +5,7 @@ using OOPProject.Movement;
 using OOPProject.Utilities;
 using OOPProject.Utilities.EmojiImages;
 using OOPProject.Utilities.FieldUtilities;
+using OOPProject.Utilities.Messages;
 using OOPProject.Utilities.NpcUtilities;
 using OOPProject.Utilities.PlayerUtilities;
 using OOPProject.Utilities.WaterUtilities;
@@ -24,163 +25,87 @@ namespace OOPProject.Core
 
             AnimalList animalList = new AnimalList();
             
-            List<Animal> terrestrialAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == "Terrestrial");
-            List<Animal> aquaticAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == "Aquatic");
+            List<Animal> terrestrialAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == LandType.Terrestrial);
+            List<Animal> aquaticAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == LandType.Aquatic);
             List<Animal> bothAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == "Both");
 
-            char border = (char)0x25A0;
             bool isPlayerInWater = false;
-            int circleFieldCount = 0;
+            int waterFieldCount = 0;
 
             ConsoleKeyInfo keyInput = new ConsoleKeyInfo();
 
-            Console.WriteLine("Insert field size (NxN)");
+            Console.WriteLine(InputMessages.FieldSize);
             int n = int.Parse(Console.ReadLine());
            
-            Console.WriteLine("What animal do you want to be:");
+            Console.WriteLine(InputMessages.AnimalPick);
             Console.WriteLine(PlayerCommands.AnimalChoice());
-            int wantedAnimalId = int.Parse(Console.ReadLine());
 
-            while (wantedAnimalId > animalList.AddedAnimalList.Count)
+            int playerAnimalId = int.Parse(Console.ReadLine());
+
+            while (playerAnimalId > animalList.AddedAnimalList.Count)
             {
-                Console.WriteLine("Incorrect animal selection!");
-                wantedAnimalId = int.Parse(Console.ReadLine());
+                Console.WriteLine(OutputMessages.IncorrectAnimalSelection);
+                playerAnimalId = int.Parse(Console.ReadLine());
             }
 
             int radius = n / 4;
 
-            string[,] waterField = WaterCommands.GenerateWater(radius, ref circleFieldCount);
+            string[,] waterField = WaterCommands.GenerateWater(radius, ref waterFieldCount);
 
-            Animal player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == wantedAnimalId);
+            Animal player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == playerAnimalId);
 
-            Console.WriteLine("Insert npc animals count:");
-            int maxCountNpcAnimals = ((n - 2) * (n - 2)) - 1;
+            Console.WriteLine(InputMessages.AnimalCountInput);
 
-            int npcCount = int.Parse(Console.ReadLine());
-            while (maxCountNpcAnimals < npcCount)
-            {
-                Console.WriteLine($"Too much animals! The max capacity animals is {maxCountNpcAnimals}");
-                npcCount = int.Parse(Console.ReadLine());
-            }
+            int npcCount = NpcCommands.GenerateNpcCount(n);
 
-            string commandType = " ";
+            
             int playerRowIndex = 0;
             int playerColIndex = 0;
 
             string[,] field
-                = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, circleFieldCount);
+                = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, waterFieldCount);
 
             Console.Clear();
             Console.WriteLine(FieldCommands.FieldOutput(field));
-            Console.WriteLine("Tap 'Enter' to enter a command (Type 'Help' to see the available commands.)");
-
-            bool isThereException = false;
+            Console.WriteLine(InputMessages.EnterACommand);
 
             while (true)
             {
                 keyInput = Console.ReadKey();
 
                 HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-
-                try
-                {
+               
                     switch (keyInput.Key)
                     {
                         case ConsoleKey.UpArrow:
-                            field = PlayerMove.Up(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, border, isThereException, ref isPlayerInWater);
+                            field = PlayerMove.Up(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, ref isPlayerInWater);
                             break;
                         case ConsoleKey.DownArrow:
-                            field = PlayerMove.Down(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, border, isThereException, ref isPlayerInWater);
+                            field = PlayerMove.Down(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, ref isPlayerInWater);
                             break;
                         case ConsoleKey.RightArrow:
-                            field = PlayerMove.Right(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, border, isThereException, ref isPlayerInWater);
+                            field = PlayerMove.Right(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, ref isPlayerInWater);
                             break;
                         case ConsoleKey.LeftArrow:
-                            field = PlayerMove.Left(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, border, isThereException, ref isPlayerInWater);
+                            field = PlayerMove.Left(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, ref isPlayerInWater);
                             break;
                     }
-                }
-                catch (Exception)
-                {
-                    isThereException = true;
-                    Console.WriteLine("You cannot go past the border!");
-                }
 
                 if (keyInput.Key == ConsoleKey.Enter)
-                {
-                    HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-
-                    commandType = Console.ReadLine();
-
-                    commandType = commandType.ToLower();
-
-                    if (commandType == "help")
+                {                
+                    string commandType = GameOptions.GameMenu(field);
+              
+                    switch (commandType)
                     {
-                        Console.SetCursorPosition(0, field.GetLength(0));
-                        Console.Write(new string(' ', Console.WindowWidth));
-
-                        Console.WriteLine("1 -> Change animal");
-                        Console.WriteLine("2 -> Reset game");
-                        Console.WriteLine("3 -> End game");
-
-                        Console.SetCursorPosition(0, field.GetLength(0));
-
-                        commandType = Console.ReadLine();
-                    }
-
-                    if (commandType == "1")
-                    {
-                        Console.WriteLine("What animal do you pick:");
-
-                        Console.WriteLine(PlayerCommands.AnimalChoice());
-
-                        HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-
-                        int animalId = int.Parse(Console.ReadLine());
-
-                        player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == animalId);
-
-                        while (!(WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex)) && player.LandType == "Aquatic")
-                        {
-                            Console.WriteLine($"You cannot choose that animal! You are not in {player.LandType} land! Choose other animal");
-                            HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-                            animalId = int.Parse(Console.ReadLine());
-                            player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == animalId);
-                        }
-
-                        while (WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex) && player.LandType == "Terrestrial")
-                        {
-                            Console.WriteLine($"You cannot choose that animal! You are not in {player.LandType} land! Choose other animal");
-                            HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-                            animalId = int.Parse(Console.ReadLine());
-                            player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == animalId);
-                        }
-
-                        field[playerRowIndex, playerColIndex] = player.Emoji;
-
-                        Console.Clear();
-                    }
-
-                    else if (commandType == "2")
-                    {
-                        field = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, circleFieldCount);
-            
-                        foreach (var currAnimal in animalList.AddedAnimalList)
-                        {
-                            currAnimal.KillCount = 0;
-                        }
-
-                        isPlayerInWater = false;
-                        Console.Clear();
-                    }
-                    else if (commandType == "3")
-                    {
-                        Console.Clear();
-                        foreach (var animal in animalList.AddedAnimalList)
-                        {
-                            Console.WriteLine($"{animal.Emoji}'s kill count is {animal.KillCount}");
-                        }
-                        return;
+                        case "1":
+                            field = GameOptions.ChangePlayerAnimal(field, ref player, ref playerRowIndex, ref playerColIndex, animalList);
+                            break;
+                        case "2":
+                            field = GameOptions.ResetGame(field, player, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, waterFieldCount, ref isPlayerInWater);
+                            break;
+                        case "3":
+                            GameOptions.EndGame(animalList);
+                            return;
                     }
                 }
 
@@ -188,9 +113,11 @@ namespace OOPProject.Core
 
                 Console.WriteLine(FieldCommands.FieldOutput(field));
 
-                Console.WriteLine("Tap 'Enter' to enter a command (Type 'Help' to see the available commands.)");
+                Console.WriteLine(InputMessages.EnterACommand);
             }
-        }                                                
+        }
+
+        
     }
 }
     

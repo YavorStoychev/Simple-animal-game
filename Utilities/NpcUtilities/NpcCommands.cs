@@ -1,6 +1,7 @@
 ﻿using OOPProject.Models;
 using OOPProject.Models.Contracts;
 using OOPProject.Utilities.EmojiImages;
+using OOPProject.Utilities.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,28 @@ namespace OOPProject.Utilities.NpcUtilities
 {
     public class NpcCommands
     {
-       public static void PutCurrEntityInsideTheField(string[,] field, ref int npcRowIndex, ref int npcColIndex, ref IAnimal animal, ref int circleFieldCount, AnimalList animalList)//За оправяне
+        public static int GenerateNpcCount(int n)
+        {
+            int npcCount = int.Parse(Console.ReadLine());
+
+            int maxCountNpcAnimals = ((n - 2) * (n - 2)) - 1;
+
+            while (maxCountNpcAnimals < npcCount)
+            {
+                Console.WriteLine(string.Format(OutputMessages.TooMuchAnimalInput, maxCountNpcAnimals));
+                npcCount = int.Parse(Console.ReadLine());
+            }
+
+            return npcCount;
+        }
+
+       public static void PutCurrEntityInsideTheField(string[,] field, ref int npcRowIndex, ref int npcColIndex, ref IAnimal animal, ref int circleFieldCount, AnimalList animalList)
         {
             Random random = new Random();
 
             char border = (char)0x25A0;
 
-        rewritingTheindexes:
+            rewritingTheindexes:
 
             while (field[npcRowIndex, npcColIndex] != "  ")
             {

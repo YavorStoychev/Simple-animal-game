@@ -2,6 +2,7 @@
 using OOPProject.Movement;
 using OOPProject.Utilities;
 using OOPProject.Utilities.EmojiImages;
+using OOPProject.Utilities.Messages;
 using OOPProject.Utilities.WaterUtilities;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,7 @@ namespace OOPProject.Movement
 {
     public class PlayerMove
     {       
-
-        public static string[,] Up(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex,AnimalList animalList ,List<Animal> terrestrialAnimals, List<Animal> aquaticAnimals, List<Animal> bothAnimals ,char border,bool isThereException, ref bool isPlayerInWater)
+        public static string[,] Up(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex,AnimalList animalList ,List<Animal> terrestrialAnimals, List<Animal> aquaticAnimals, List<Animal> bothAnimals , ref bool isPlayerInWater)
         {
             int tempPlayerRowIndex = playerRowIndex;
             int tempPlayerColIndex = playerColIndex;
@@ -22,7 +22,8 @@ namespace OOPProject.Movement
 
             if (player.LandType == "Terrestrial")
             {
-                if (!(field[tempPlayerRowIndex - 2, tempPlayerColIndex] == border.ToString()))
+
+                if (tempPlayerRowIndex - 1 > 0)
                 {
                     if ((field[tempPlayerRowIndex - 1, tempPlayerColIndex] == EmojiList.Water
                         || aquaticAnimals.Any(x => x.Emoji == field[tempPlayerRowIndex - 1, tempPlayerColIndex])) && !player.CanSwim)
@@ -46,12 +47,12 @@ namespace OOPProject.Movement
                     tempPlayerRowIndex--;
                     field[tempPlayerRowIndex, tempPlayerColIndex] = player.Emoji;
                 }
-
-                if (isThereException && (field[tempPlayerRowIndex - 1, tempPlayerColIndex] != border.ToString()))
+                else
                 {
-                    Console.Clear();
-                    isThereException = false;
+                    Console.WriteLine(ExceptionMessages.BorderException);
+                    return field;
                 }
+                
             }
             else if (player.LandType == "Aquatic")
             {
@@ -79,7 +80,7 @@ namespace OOPProject.Movement
             }
             else if (player.LandType == "Both")
             {
-                if (!(field[tempPlayerRowIndex - 2, tempPlayerColIndex] == border.ToString()))
+                if (tempPlayerRowIndex - 1 > 0)
                 {
                     if (field[tempPlayerRowIndex - 1, tempPlayerColIndex] == EmojiList.Water
                         || aquaticAnimals.Any(x => x.Emoji == field[tempPlayerRowIndex - 1, tempPlayerColIndex])
@@ -132,10 +133,10 @@ namespace OOPProject.Movement
                     }
 
                 }
-                if (isThereException && (field[tempPlayerRowIndex - 1, tempPlayerColIndex] != border.ToString()))
+                else
                 {
-                    Console.Clear();
-                    isThereException = false;
+                    Console.WriteLine(ExceptionMessages.BorderException);
+                    return field;
                 }
 
             }
@@ -145,7 +146,7 @@ namespace OOPProject.Movement
             isPlayerInWater = tempIsPlayerInWater;
             return field;
         }
-        public static string[,] Down(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, List<Animal> terrestrialAnimals, List<Animal> aquaticAnimals, List<Animal> bothAnimals, char border, bool isThereException, ref bool isPlayerInWater)
+        public static string[,] Down(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, List<Animal> terrestrialAnimals, List<Animal> aquaticAnimals, List<Animal> bothAnimals,ref bool isPlayerInWater)
         {
             int tempPlayerRowIndex = playerRowIndex;
             int tempPlayerColIndex = playerColIndex;
@@ -154,7 +155,7 @@ namespace OOPProject.Movement
 
             if (player.LandType == "Terrestrial")
             {
-                if (!(field[tempPlayerRowIndex + 2, tempPlayerColIndex] == border.ToString()))
+                if (tempPlayerRowIndex + 2 < field.GetLength(0))
                 {
                     if ((field[tempPlayerRowIndex + 1, tempPlayerColIndex] == EmojiList.Water
                        || aquaticAnimals.Any(x => x.Emoji == field[tempPlayerRowIndex + 1, tempPlayerColIndex])) && player.LandType == "Terrestrial")
@@ -177,10 +178,10 @@ namespace OOPProject.Movement
                     tempPlayerRowIndex++;
                     field[tempPlayerRowIndex, tempPlayerColIndex] = player.Emoji;
                 }
-                if (isThereException && (field[tempPlayerRowIndex + 1, tempPlayerColIndex] != border.ToString()))
+                else
                 {
-                    Console.Clear();
-                    isThereException = false;
+                    Console.WriteLine(ExceptionMessages.BorderException);
+                    return field;
                 }
             }
             else if (player.LandType == "Aquatic")
@@ -209,7 +210,7 @@ namespace OOPProject.Movement
             }
             else if (player.LandType == "Both")
             {
-                if (!(field[tempPlayerRowIndex + 2, tempPlayerColIndex] == border.ToString()))
+                if (tempPlayerRowIndex + 2 < field.GetLength(0))
                 {
                     if (field[tempPlayerRowIndex + 1, tempPlayerColIndex] == EmojiList.Water
                         || aquaticAnimals.Any(x => x.Emoji == field[tempPlayerRowIndex + 1, tempPlayerColIndex])
@@ -262,10 +263,10 @@ namespace OOPProject.Movement
                     }
 
                 }
-                if (isThereException && (field[tempPlayerRowIndex + 1, tempPlayerColIndex] != border.ToString()))
+                else
                 {
-                    Console.Clear();
-                    isThereException = false;
+                    Console.WriteLine(ExceptionMessages.BorderException);
+                    return field;
                 }
             }
 
@@ -274,7 +275,7 @@ namespace OOPProject.Movement
             isPlayerInWater = tempIsPlayerInWater;
             return field;
         }
-        public static string[,] Right(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, List<Animal> terrestrialAnimals, List<Animal> aquaticAnimals, List<Animal> bothAnimals, char border, bool isThereException, ref bool isPlayerInWater)
+        public static string[,] Right(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, List<Animal> terrestrialAnimals, List<Animal> aquaticAnimals, List<Animal> bothAnimals, ref bool isPlayerInWater)
         {
             int tempPlayerRowIndex = playerRowIndex;
             int tempPlayerColIndex = playerColIndex;
@@ -282,7 +283,7 @@ namespace OOPProject.Movement
 
             if (player.LandType == "Terrestrial")
             {
-                if (!(field[tempPlayerRowIndex, tempPlayerColIndex + 2] == border.ToString()))
+                if (tempPlayerColIndex + 2 < field.GetLength(0))
                 {
                     if ((field[tempPlayerRowIndex, tempPlayerColIndex + 1] == EmojiList.Water
                         || aquaticAnimals.Any(x => x.Emoji == field[tempPlayerRowIndex, tempPlayerColIndex + 1])) && player.LandType == "Terrestrial")
@@ -305,10 +306,10 @@ namespace OOPProject.Movement
                     tempPlayerColIndex++;
                     field[tempPlayerRowIndex, tempPlayerColIndex] = player.Emoji;
                 }
-                if (isThereException && (field[tempPlayerRowIndex, tempPlayerColIndex + 1] != border.ToString()))
+                else
                 {
-                    Console.Clear();
-                    isThereException = false;
+                    Console.WriteLine(ExceptionMessages.BorderException);
+                    return field;
                 }
             }
             else if (player.LandType == "Aquatic")
@@ -337,7 +338,7 @@ namespace OOPProject.Movement
             }
             else if (player.LandType == "Both")
             {
-                if (!(field[tempPlayerRowIndex, tempPlayerColIndex + 2] == border.ToString()))
+                if (tempPlayerColIndex + 2 < field.GetLength(0))
                 {
                     if (field[tempPlayerRowIndex, tempPlayerColIndex + 1] == EmojiList.Water
                         || aquaticAnimals.Any(x => x.Emoji == field[tempPlayerRowIndex, tempPlayerColIndex + 1])
@@ -390,10 +391,10 @@ namespace OOPProject.Movement
                     }
 
                 }
-                if (isThereException && (field[tempPlayerRowIndex, tempPlayerColIndex + 1] != border.ToString()))
+                else
                 {
-                    Console.Clear();
-                    isThereException = false;
+                    Console.WriteLine(ExceptionMessages.BorderException);
+                    return field;
                 }
             }
 
@@ -402,7 +403,7 @@ namespace OOPProject.Movement
             isPlayerInWater = tempIsPlayerInWater;
             return field;
         }
-        public static string[,] Left(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, List<Animal> terrestrialAnimals, List<Animal> aquaticAnimals, List<Animal> bothAnimals, char border, bool isThereException, ref bool isPlayerInWater)
+        public static string[,] Left(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, List<Animal> terrestrialAnimals, List<Animal> aquaticAnimals, List<Animal> bothAnimals,ref bool isPlayerInWater)
         {
             int tempPlayerRowIndex = playerRowIndex;
             int tempPlayerColIndex = playerColIndex;
@@ -410,7 +411,7 @@ namespace OOPProject.Movement
 
             if (player.LandType == "Terrestrial")
             {
-                if (!(field[tempPlayerRowIndex, tempPlayerColIndex - 2] == border.ToString()))
+                if (tempPlayerColIndex - 1 > 0)
                 {
                     if ((field[tempPlayerRowIndex, tempPlayerColIndex - 1] == EmojiList.Water
                         || aquaticAnimals.Any(x => x.Emoji == field[tempPlayerRowIndex, tempPlayerColIndex - 1])) && player.LandType == "Terrestrial")
@@ -433,10 +434,10 @@ namespace OOPProject.Movement
                     tempPlayerColIndex--;
                     field[tempPlayerRowIndex, tempPlayerColIndex] = player.Emoji;
                 }
-                if (isThereException && (field[tempPlayerRowIndex, tempPlayerColIndex - 1] != border.ToString()))
+                else
                 {
-                    Console.Clear();
-                    isThereException = false;
+                    Console.WriteLine(ExceptionMessages.BorderException);
+                    return field;
                 }
             }
             else if (player.LandType == "Aquatic")
@@ -465,7 +466,7 @@ namespace OOPProject.Movement
             }
             else if (player.LandType == "Both")
             {
-                if (!(field[tempPlayerRowIndex, tempPlayerColIndex - 2] == border.ToString()))
+                if (tempPlayerColIndex - 1 > 0)
                 {
                     if (field[tempPlayerRowIndex, tempPlayerColIndex - 1] == EmojiList.Water
                         || aquaticAnimals.Any(x => x.Emoji == field[tempPlayerRowIndex, tempPlayerColIndex - 1])
@@ -518,10 +519,10 @@ namespace OOPProject.Movement
                     }
 
                 }
-                if (isThereException && (field[tempPlayerRowIndex, tempPlayerColIndex - 1] != border.ToString()))
+                else
                 {
-                    Console.Clear();
-                    isThereException = false;
+                    Console.WriteLine(ExceptionMessages.BorderException);
+                    return field;
                 }
             }
 
