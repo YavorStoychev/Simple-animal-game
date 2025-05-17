@@ -9,11 +9,11 @@ namespace OOPProject.Utilities
 {
     public class HelpfulCommands
     {
-        public static void RemoveTheFirstRowAfterTheField(string[,] field)
+        public static void RemoveTheSecondRowAfterTheField(string[,] field)
         {
-            Console.SetCursorPosition(0, field.GetLength(0));
+            Console.SetCursorPosition(0, field.GetLength(0) + 1);
             Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, field.GetLength(0));
+            Console.SetCursorPosition(0, field.GetLength(0) + 1);
         }
 
         public static bool BattleInteraction(string[,] field, AnimalList animalList, Animal player, string enemyEmoji)
@@ -35,14 +35,14 @@ namespace OOPProject.Utilities
                 }
                 else if ((player.Hp + player.Defence) <= (enemy.Hp + enemy.Defence))
                 {
-                    HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+                    RemoveTheSecondRowAfterTheField(field);
                     Console.WriteLine("You cannot kill that animal!");
                     return false;
                 }
             }
             else if (player.LandType != enemy.LandType)
             {
-                HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+                RemoveTheSecondRowAfterTheField(field);
                 Console.WriteLine("You cannot interfere with this animal!");
                 return false;
             }

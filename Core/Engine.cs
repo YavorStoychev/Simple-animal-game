@@ -22,10 +22,8 @@ namespace OOPProject.Core
         {
             Console.OutputEncoding = Encoding.UTF8;
 
-            Random random = new Random();
-
             AnimalList animalList = new AnimalList();
-
+            
             List<Animal> terrestrialAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == "Terrestrial");
             List<Animal> aquaticAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == "Aquatic");
             List<Animal> bothAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == "Both");
@@ -36,12 +34,9 @@ namespace OOPProject.Core
 
             ConsoleKeyInfo keyInput = new ConsoleKeyInfo();
 
-            Console.WriteLine("Insert row count:");
-            int rowCount = int.Parse(Console.ReadLine());
-
-            Console.WriteLine("Insert column count:");
-            int columnCount = int.Parse(Console.ReadLine());
-
+            Console.WriteLine("Insert field size (NxN)");
+            int n = int.Parse(Console.ReadLine());
+           
             Console.WriteLine("What animal do you want to be:");
             Console.WriteLine(PlayerCommands.AnimalChoice());
             int wantedAnimalId = int.Parse(Console.ReadLine());
@@ -52,13 +47,14 @@ namespace OOPProject.Core
                 wantedAnimalId = int.Parse(Console.ReadLine());
             }
 
-            int radius = rowCount / 4;
+            int radius = n / 4;
+
             string[,] waterField = WaterCommands.GenerateWater(radius, ref circleFieldCount);
 
             Animal player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == wantedAnimalId);
 
             Console.WriteLine("Insert npc animals count:");
-            int maxCountNpcAnimals = ((rowCount - 2) * (columnCount - 2)) - 1;
+            int maxCountNpcAnimals = ((n - 2) * (n - 2)) - 1;
 
             int npcCount = int.Parse(Console.ReadLine());
             while (maxCountNpcAnimals < npcCount)
@@ -72,7 +68,7 @@ namespace OOPProject.Core
             int playerColIndex = 0;
 
             string[,] field
-                = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, rowCount, columnCount, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, circleFieldCount);
+                = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, circleFieldCount);
 
             Console.Clear();
             Console.WriteLine(FieldCommands.FieldOutput(field));
@@ -84,523 +80,35 @@ namespace OOPProject.Core
             {
                 keyInput = Console.ReadKey();
 
-                if (keyInput.Key == ConsoleKey.UpArrow)
+                HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
+
+                try
                 {
-                    try
+                    switch (keyInput.Key)
                     {
-                        if (player.LandType == "Terrestrial")
-                        {
-                            if (!(field[playerRowIndex - 2, playerColIndex] == border.ToString()))
-                            {
-                                if ((field[playerRowIndex - 1, playerColIndex] == EmojiList.Water
-                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])) && player.LandType == "Terrestrial")
-                                {
-                                    HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
-                                    Console.WriteLine("You cannot go that way!");
-                                    continue;
-                                }
-
-                                else if (terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex - 1, playerColIndex];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                }
-
-                                field[playerRowIndex, playerColIndex] = "  ";
-                                playerRowIndex--;
-                                field[playerRowIndex, playerColIndex] = player.Emoji;
-                            }
-
-                            if (isThereException && (field[playerRowIndex - 2, playerColIndex] != border.ToString()))
-                            {
-                                Console.Clear();
-                                isThereException = false;
-                            }
-                        }
-                        else if (player.LandType == "Aquatic")
-                        {
-                            if ((field[playerRowIndex - 1, playerColIndex] == "  "
-                                || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])) && player.LandType == "Aquatic")
-                            {
-                                HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
-                                Console.WriteLine("You cannot go that way!");
-                                continue;
-                            }
-                            else if (aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]))
-                            {
-                                string enemyEmoji = field[playerRowIndex - 1, playerColIndex];
-
-                                if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                {
-                                    continue;
-                                }
-
-                            }
-                            field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                            playerRowIndex--;
-                            field[playerRowIndex, playerColIndex] = player.Emoji;
-
-                        }
-                        else if (player.LandType == "Both")
-                        {
-                            if (!(field[playerRowIndex - 2, playerColIndex] == border.ToString()))
-                            {
-                                if (field[playerRowIndex - 1, playerColIndex] == EmojiList.Water
-                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex - 1, playerColIndex];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                    if (WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex))
-                                    {
-                                        isPlayerInWater = true;
-                                    }
-                                    if (isPlayerInWater)
-                                    {
-                                        field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                                    }
-                                    else
-                                    {
-                                        field[playerRowIndex, playerColIndex] = "  ";
-                                    }
-
-                                    playerRowIndex--;
-                                    field[playerRowIndex, playerColIndex] = player.Emoji;
-                                    isPlayerInWater = true;
-                                }
-                                else if (field[playerRowIndex - 1, playerColIndex] == "  "
-                                    || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex - 1, playerColIndex]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex - 1, playerColIndex];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                    if (isPlayerInWater)
-                                    {
-                                        field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                                    }
-                                    else
-                                    {
-                                        field[playerRowIndex, playerColIndex] = "  ";
-                                    }
-                                    playerRowIndex--;
-                                    field[playerRowIndex, playerColIndex] = player.Emoji;
-                                    isPlayerInWater = false;
-                                }
-
-                            }
-                            if (isThereException && (field[playerRowIndex - 2, playerColIndex] != border.ToString()))
-                            {
-                                Console.Clear();
-                                isThereException = false;
-                            }
-                        }
+                        case ConsoleKey.UpArrow:
+                            field = PlayerMove.Up(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, border, isThereException, ref isPlayerInWater);
+                            break;
+                        case ConsoleKey.DownArrow:
+                            field = PlayerMove.Down(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, border, isThereException, ref isPlayerInWater);
+                            break;
+                        case ConsoleKey.RightArrow:
+                            field = PlayerMove.Right(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, border, isThereException, ref isPlayerInWater);
+                            break;
+                        case ConsoleKey.LeftArrow:
+                            field = PlayerMove.Left(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, border, isThereException, ref isPlayerInWater);
+                            break;
                     }
-                    catch (Exception)
-                    {
-                        isThereException = true;
-                        Console.WriteLine("You cannot go that way!");
-                    }
-                }//DONE
-                else if (keyInput.Key == ConsoleKey.DownArrow)
+                }
+                catch (Exception)
                 {
-                    try
-                    {
-                        if (player.LandType == "Terrestrial")
-                        {
-                            if (!(field[playerRowIndex + 2, playerColIndex] == border.ToString()))
-                            {
-                                if ((field[playerRowIndex + 1, playerColIndex] == EmojiList.Water
-                                   || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex])) && player.LandType == "Terrestrial")
-                                {
-                                    HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
-                                    Console.WriteLine("You cannot go that way!");
-                                    continue;
-                                }
-                                else if (terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex + 1, playerColIndex];
+                    isThereException = true;
+                    Console.WriteLine("You cannot go past the border!");
+                }
 
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                }
-                                field[playerRowIndex, playerColIndex] = "  ";
-                                playerRowIndex++;
-                                field[playerRowIndex, playerColIndex] = player.Emoji;
-                            }
-                            if (isThereException && (field[playerRowIndex + 2, playerColIndex] != border.ToString()))
-                            {
-                                Console.Clear();
-                                isThereException = false;
-                            }
-                        }
-
-                        else if (player.LandType == "Aquatic")
-                        {
-                            if ((field[playerRowIndex + 1, playerColIndex] == "  " 
-                                || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex])) && player.LandType == "Aquatic")
-                            {
-                                HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
-                                Console.WriteLine("You cannot go that way!");
-                                continue;
-                            }
-                            else if (aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex]))
-                            {
-                                string enemyEmoji = field[playerRowIndex + 1, playerColIndex];
-
-                                if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                {
-                                    continue;
-                                }
-
-                            }
-                            field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                            playerRowIndex++;
-                            field[playerRowIndex, playerColIndex] = player.Emoji;
-
-                        }
-                        else if (player.LandType == "Both")
-                        {
-                            if (!(field[playerRowIndex + 2, playerColIndex] == border.ToString()))
-                            {
-                                if (field[playerRowIndex + 1, playerColIndex] == EmojiList.Water
-                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex + 1, playerColIndex];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                    if (WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex))
-                                    {
-                                        isPlayerInWater = true;
-                                    }
-                                    if (isPlayerInWater)
-                                    {
-                                        field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                                    }
-                                    else
-                                    {
-                                        field[playerRowIndex, playerColIndex] = "  ";
-                                    }
-                                    playerRowIndex++;
-                                    field[playerRowIndex, playerColIndex] = player.Emoji;
-                                    isPlayerInWater = true;
-                                }
-
-                                else if (field[playerRowIndex + 1, playerColIndex] == "  "
-                                    || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex + 1, playerColIndex]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex + 1, playerColIndex];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                    if (isPlayerInWater)
-                                    {
-                                        field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                                    }
-                                    else
-                                    {
-                                        field[playerRowIndex, playerColIndex] = "  ";
-                                    }
-                                    playerRowIndex++;
-                                    field[playerRowIndex, playerColIndex] = player.Emoji;
-                                    isPlayerInWater = false;
-                                }
-
-                            }
-                            if (isThereException && (field[playerRowIndex + 2, playerColIndex] != border.ToString()))
-                            {
-                                Console.Clear();
-                                isThereException = false;
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        isThereException = true;
-                        Console.WriteLine("You cannot go that way!");
-                    }
-                }//DONE
-                else if (keyInput.Key == ConsoleKey.RightArrow)
+                if (keyInput.Key == ConsoleKey.Enter)
                 {
-                    try
-                    {
-                        if (player.LandType == "Terrestrial")
-                        {
-                            if (!(field[playerRowIndex, playerColIndex + 2] == border.ToString()))
-                            {
-                                if ((field[playerRowIndex, playerColIndex + 1] == EmojiList.Water 
-                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1])) && player.LandType == "Terrestrial")
-                                {
-                                    HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
-                                    Console.WriteLine("You cannot go that way!");
-                                    continue;
-                                }
-                                else if (terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1]) 
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex, playerColIndex + 1];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                }
-                                field[playerRowIndex, playerColIndex] = "  ";
-                                playerColIndex++;
-                                field[playerRowIndex, playerColIndex] = player.Emoji;
-                            }
-                            if (isThereException && (field[playerRowIndex, playerColIndex + 1] != border.ToString()))
-                            {
-                                Console.Clear();
-                                isThereException = false;
-                            }
-                        }
-                        else if (player.LandType == "Aquatic")
-                        {
-                            if ((field[playerRowIndex, playerColIndex + 1] == "  " 
-                                || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1])) && player.LandType == "Aquatic")
-                            {
-                                HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
-                                Console.WriteLine("You cannot go that way!");
-                                continue;
-                            }
-                            else if (aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1]))
-                            {
-                                string enemyEmoji = field[playerRowIndex, playerColIndex + 1];
-
-                                if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                {
-                                    continue;
-                                }
-
-                            }
-                            field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                            playerColIndex++;
-                            field[playerRowIndex, playerColIndex] = player.Emoji;
-
-                        }
-                        else if (player.LandType == "Both")
-                        {           
-                            if (!(field[playerRowIndex, playerColIndex + 2] == border.ToString()))
-                            {                 
-                                if (field[playerRowIndex, playerColIndex + 1] == EmojiList.Water 
-                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1]) 
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1]))
-                                {                    
-                                    string enemyEmoji = field[playerRowIndex, playerColIndex + 1];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }                          
-                                    if (WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex))
-                                    {
-                                        isPlayerInWater = true;
-                                    }
-                                    if (isPlayerInWater)
-                                    {
-                                        field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                                    }
-                                    else
-                                    {
-                                        field[playerRowIndex, playerColIndex] = "  ";
-                                    }
-                                    playerColIndex++;
-                                    field[playerRowIndex, playerColIndex] = player.Emoji;
-                                    isPlayerInWater = true;
-                                }
-
-                                else if (field[playerRowIndex, playerColIndex + 1] == "  " 
-                                    || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1]) 
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex + 1]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex, playerColIndex + 1];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }               
-                                    if (isPlayerInWater)
-                                    {
-                                        field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                                    }
-                                    else
-                                    {
-                                        field[playerRowIndex, playerColIndex] = "  ";
-                                    }                                 
-                                    playerColIndex++;
-                                    field[playerRowIndex, playerColIndex] = player.Emoji;
-                                    isPlayerInWater = false;
-                                }                             
-
-                            }
-                            if (isThereException && (field[playerRowIndex, playerColIndex + 1] != border.ToString()))
-                            {
-                                Console.Clear();
-                                isThereException = false;
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        isThereException = true;
-                        Console.WriteLine("You cannot go that way!");
-                    }
-                }//DONE
-                else if (keyInput.Key == ConsoleKey.LeftArrow)
-                {
-                    try
-                    {
-                        if (player.LandType == "Terrestrial")
-                        {
-                            if (!(field[playerRowIndex, playerColIndex - 2] == border.ToString()))
-                            {
-                                if ((field[playerRowIndex, playerColIndex - 1] == EmojiList.Water
-                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1])) && player.LandType == "Terrestrial")
-                                {
-                                    HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
-                                    Console.WriteLine("You cannot go that way!");
-                                    continue;
-                                }
-                                else if (terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex, playerColIndex - 1];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                }
-                                field[playerRowIndex, playerColIndex] = "  ";
-                                playerColIndex--;
-                                field[playerRowIndex, playerColIndex] = player.Emoji;
-                            }
-                            if (isThereException && (field[playerRowIndex, playerColIndex - 1] != border.ToString()))
-                            {
-                                Console.Clear();
-                                isThereException = false;
-                            }
-                        }
-                        else if (player.LandType == "Aquatic")
-                        {
-                            if ((field[playerRowIndex, playerColIndex - 1] == "  " 
-                                || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1])) && player.LandType == "Aquatic")
-                            {
-                                HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
-                                Console.WriteLine("You cannot go that way!");
-                                continue;
-                            }
-                            else if (aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1]))
-                            {
-                                string enemyEmoji = field[playerRowIndex, playerColIndex - 1];
-
-                                if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                {
-                                    continue;
-                                }
-
-                            }
-                            field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                            playerColIndex--;
-                            field[playerRowIndex, playerColIndex] = player.Emoji;
-
-                        }
-                        else if (player.LandType == "Both")
-                        {
-                            if (!(field[playerRowIndex, playerColIndex - 2] == border.ToString()))
-                            {
-                                if (field[playerRowIndex, playerColIndex - 1] == EmojiList.Water
-                                    || aquaticAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex, playerColIndex - 1];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                    if (WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex))
-                                    {
-                                        isPlayerInWater = true;
-                                    }
-                                    if (isPlayerInWater)
-                                    {
-                                        field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                                    }
-                                    else
-                                    {
-                                        field[playerRowIndex, playerColIndex] = "  ";
-                                    }
-                                    playerColIndex--;
-                                    field[playerRowIndex, playerColIndex] = player.Emoji;
-                                    isPlayerInWater = true;
-                                }
-
-                                else if (field[playerRowIndex, playerColIndex - 1] == "  "
-                                    || terrestrialAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1])
-                                    || bothAnimals.Any(x => x.Emoji == field[playerRowIndex, playerColIndex - 1]))
-                                {
-                                    string enemyEmoji = field[playerRowIndex, playerColIndex - 1];
-
-                                    if (!HelpfulCommands.BattleInteraction(field, animalList, player, enemyEmoji))
-                                    {
-                                        continue;
-                                    }
-                                    if (isPlayerInWater)
-                                    {
-                                        field[playerRowIndex, playerColIndex] = EmojiList.Water;
-                                    }
-                                    else
-                                    {
-                                        field[playerRowIndex, playerColIndex] = "  ";
-                                    }
-                                    playerColIndex--;
-                                    field[playerRowIndex, playerColIndex] = player.Emoji;
-                                    isPlayerInWater = false;
-                                }
-
-                            }
-                            if (isThereException && (field[playerRowIndex, playerColIndex - 1] != border.ToString()))
-                            {
-                                Console.Clear();
-                                isThereException = false;
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        isThereException = true;
-                        Console.WriteLine("You cannot go that way!");
-                    }
-                }//DONE
-
-                else if (keyInput.Key == ConsoleKey.Enter || keyInput.Key != ConsoleKey.UpArrow || keyInput.Key != ConsoleKey.DownArrow || keyInput.Key != ConsoleKey.LeftArrow || keyInput.Key != ConsoleKey.RightArrow)
-                {
-
-                    HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+                    HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
 
                     commandType = Console.ReadLine();
 
@@ -626,7 +134,7 @@ namespace OOPProject.Core
 
                         Console.WriteLine(PlayerCommands.AnimalChoice());
 
-                        HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+                        HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
 
                         int animalId = int.Parse(Console.ReadLine());
 
@@ -635,7 +143,7 @@ namespace OOPProject.Core
                         while (!(WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex)) && player.LandType == "Aquatic")
                         {
                             Console.WriteLine($"You cannot choose that animal! You are not in {player.LandType} land! Choose other animal");
-                            HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+                            HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
                             animalId = int.Parse(Console.ReadLine());
                             player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == animalId);
                         }
@@ -643,7 +151,7 @@ namespace OOPProject.Core
                         while (WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex) && player.LandType == "Terrestrial")
                         {
                             Console.WriteLine($"You cannot choose that animal! You are not in {player.LandType} land! Choose other animal");
-                            HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+                            HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
                             animalId = int.Parse(Console.ReadLine());
                             player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == animalId);
                         }
@@ -655,7 +163,7 @@ namespace OOPProject.Core
 
                     else if (commandType == "2")
                     {
-                        field = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, rowCount, columnCount, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, circleFieldCount);
+                        field = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, circleFieldCount);
             
                         foreach (var currAnimal in animalList.AddedAnimalList)
                         {

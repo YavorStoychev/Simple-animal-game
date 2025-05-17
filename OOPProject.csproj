@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Movement\AquaticMove\" />
+    <Folder Include="Movement\TerrestrialMove\" />
+  </ItemGroup>
+
 </Project>

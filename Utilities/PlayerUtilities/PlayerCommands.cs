@@ -75,9 +75,9 @@ namespace OOPProject.Utilities.PlayerUtilities
        public static string AnimalChoice()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("1 - 🐅; 2 - 🐆; 3 - 🐊; 4 - 🦍");
-            sb.AppendLine("5 - 🦏; 6 - 🦈; 7 - 🦑; 8 - 🐟");
-            sb.AppendLine("9 - 🐂; 10 - 🐧; 11 - 🐘; 12 - 🐒");
+            sb.AppendLine($"1 - {EmojiList.Tiger}; 2 - {EmojiList.Leopard}; 3 - {EmojiList.Crocodile}; 4 - {EmojiList.Gorilla}");
+            sb.AppendLine($"5 - {EmojiList.Rhino}; 6 - {EmojiList.Shark}; 7 - {EmojiList.Squid}; 8 - {EmojiList.Fish}");
+            sb.AppendLine($"9 - {EmojiList.Ox}; 10 - {EmojiList.Penguin}; 11 - {EmojiList.Elephant}; 12 - {EmojiList.Monkey}");
             return sb.ToString().TrimEnd();
         }
 
@@ -100,14 +100,14 @@ namespace OOPProject.Utilities.PlayerUtilities
                 }
                 else if ((player.Hp + player.Defence) <= (enemy.Hp + enemy.Defence))
                 {
-                    HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+                    HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
                     Console.WriteLine("You cannot kill that animal!");
                     return false;
                 }
             }
             else if (player.LandType != enemy.LandType)
             {
-                HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+                HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
                 Console.WriteLine("You cannot interfere with this animal!");
                 return false;
             }

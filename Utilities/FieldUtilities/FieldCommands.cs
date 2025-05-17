@@ -70,7 +70,7 @@ namespace OOPProject.Utilities.FieldUtilities
 
        public static string[,] GeneratingFieldWithPlayerAndNpcAnimals(IAnimal player, int rowCount, int columnCount, int npcCount, ref int playerRowIndex, ref int playerColIndex, string[,] circlefield, AnimalList animalList, int circleFieldCount)
         {
-            string[,] field = FieldCommands.FieldGenerator(rowCount, columnCount);
+            string[,] field = FieldGenerator(rowCount, columnCount);
 
             WaterCommands.PlaceWaterInField(field, circlefield);
 
