@@ -12,14 +12,14 @@ namespace OOPProject.Utilities.PlayerUtilities
 {
     public class PlayerCommands
     {
-        public static string[,] GenerateRandomPlayerLocationInsideTheField(string[,] field, IAnimal player, ref int playerRowIndex, ref int playerColIndex, ref int circleFieldCount)
+        public static string[,] GenerateRandomPlayerLocationInsideTheField(string[,] field, IAnimal player, ref int playerRowIndex, ref int playerColIndex, ref int waterFieldCount)
         {
             Random random = new Random();
 
             playerRowIndex = random.Next(1, field.GetLength(0));
             playerColIndex = random.Next(1, field.GetLength(1));
 
-            InsertPlayerInsideTheField(field, player, ref playerRowIndex, ref playerColIndex, ref circleFieldCount);
+            InsertPlayerInsideTheField(field, player, ref playerRowIndex, ref playerColIndex, ref waterFieldCount);
 
 
             field[playerRowIndex, playerColIndex] = player.Emoji;
@@ -30,13 +30,9 @@ namespace OOPProject.Utilities.PlayerUtilities
         public static void InsertPlayerInsideTheField(string[,] field, IAnimal player, ref int playerRowIndex, ref int playerColIndex, ref int circleFieldCount)
         {
             Random random = new Random();
-            char border = (char)0x25A0;
+            char border = (char)0x25A0;          
 
-
-            bool isTerrestrial = IsPlayerTerrestrial(player);
-            bool isAquatic = IsPlayerAquatic(player);
-
-            if (isTerrestrial && isAquatic)
+            if (player.LandType == LandType.Terrestrial && player.CanSwim)
             {
                 while (field[playerRowIndex, playerColIndex] == border.ToString() + " ")
                 {
@@ -44,7 +40,15 @@ namespace OOPProject.Utilities.PlayerUtilities
                     playerColIndex = random.Next(1, field.GetLength(1));
                 }
             }
-            else if (isAquatic)
+            if (player.LandType == LandType.Terrestrial && !player.CanSwim)
+            {
+                while (field[playerRowIndex, playerColIndex] != "  ")
+                {
+                    playerRowIndex = random.Next(1, field.GetLength(0));
+                    playerColIndex = random.Next(1, field.GetLength(1));
+                }
+            }
+            else if (player.LandType == LandType.Aquatic)
             {
                 while (field[playerRowIndex, playerColIndex] != EmojiList.Water)
                 {
@@ -53,26 +57,8 @@ namespace OOPProject.Utilities.PlayerUtilities
                 }
                 circleFieldCount--;
             }
-            else if (isTerrestrial)
-            {
-                while (field[playerRowIndex, playerColIndex] != "  ")
-                {
-                    playerRowIndex = random.Next(1, field.GetLength(0));
-                    playerColIndex = random.Next(1, field.GetLength(1));
-                }
-            }
         }
-
-        public static bool IsPlayerTerrestrial(IAnimal player)
-        {
-            return player.LandType == "Terrestrial" || player.LandType == "Both" ? true : false;
-        }
-
-       public static bool IsPlayerAquatic(IAnimal player)
-        {
-            return player.LandType == "Aquatic" || player.LandType == "Both" ? true : false;
-        }
-
+     
        public static string AnimalChoice()
         {
             StringBuilder sb = new StringBuilder();
@@ -82,40 +68,18 @@ namespace OOPProject.Utilities.PlayerUtilities
             return sb.ToString().TrimEnd();
         }
 
-       public static bool BattleInteraction(string[,] field, AnimalList animalList, Animal player, string enemyEmoji)//Need a fix
+       public static int GetPlayerAnimalId(AnimalList animalList)
         {
-            Animal enemy = animalList.AddedAnimalList.FirstOrDefault(x => x.Emoji == enemyEmoji);
+            int playerAnimalId = int.Parse(Console.ReadLine());
 
-            if (enemy == null)
+            while (playerAnimalId > animalList.AddedAnimalList.Count)
             {
-                return true;
+                Console.WriteLine(OutputMessages.IncorrectAnimalSelection);
+                playerAnimalId = int.Parse(Console.ReadLine());
             }
 
-            if ((player.LandType == enemy.LandType) || player.LandType == "Both" || enemy.LandType == "Both")
-            {
-                if ((player.Hp + player.Defence) > (enemy.Hp + enemy.Defence))
-                {
-                    Animal animal = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == player.Id);
-                    animal.KillCount++;
-                    return true;
-                }
-                else if ((player.Hp + player.Defence) <= (enemy.Hp + enemy.Defence))
-                {
-                    HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-                    Console.WriteLine(OutputMessages.CannotKillAnimal);
-                    return false;
-                }
-            }
-            else if (player.LandType != enemy.LandType)
-            {
-                HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
-                Console.WriteLine(OutputMessages.CannotInterfere);
-                return false;
-            }
-
-            return true;
+            return playerAnimalId;
         }
-
 
     }
 }

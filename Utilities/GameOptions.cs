@@ -19,20 +19,21 @@ namespace OOPProject.Utilities
 
             Console.WriteLine(PlayerCommands.AnimalChoice());
 
-            HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+            HelpfulCommands.RemoveTheNRowAfterTheField(field,0);
 
             int animalId = int.Parse(Console.ReadLine());
 
             player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == animalId);
 
+
             while (!WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex) && player.LandType == LandType.Aquatic)
             {
-                player = ChangeCurrPlayerAnimal(field, ref player, animalList);
+                player = ChangeCurrPlayerAnimalException(field, ref player, animalList);
             }
 
-            while (WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex) && player.LandType == LandType.Terrestrial)
+            while (WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex) && player.LandType == LandType.Terrestrial && !player.CanSwim)
             {
-                player = ChangeCurrPlayerAnimal(field, ref player, animalList);
+                player = ChangeCurrPlayerAnimalException(field, ref player, animalList);
             }
 
             field[playerRowIndex, playerColIndex] = player.Emoji;
@@ -42,11 +43,11 @@ namespace OOPProject.Utilities
             return field;
         }
 
-        private static Animal ChangeCurrPlayerAnimal(string[,] field, ref Animal player, AnimalList animalList)
+        private static Animal ChangeCurrPlayerAnimalException(string[,] field, ref Animal player, AnimalList animalList)
         {         
             Console.WriteLine(string.Format(OutputMessages.CannotPickCurrAnimal, player.LandType));
 
-            HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+            HelpfulCommands.RemoveTheNRowAfterTheField(field,0);
 
             int animalId = int.Parse(Console.ReadLine());
 
@@ -55,9 +56,9 @@ namespace OOPProject.Utilities
             return player;
         }
 
-        public static string[,] ResetGame(string[,] field, Animal player, int n, int npcCount, ref int playerRowIndex, ref int playerColIndex, string[,] waterField, AnimalList animalList, int circleFieldCount, ref bool isPlayerInWater)
+        public static string[,] ResetGame(string[,] field, Animal player, int n, int npcCount, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList,ref bool isPlayerInWater)
         {
-            field = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, circleFieldCount);
+            field = FieldCommands.GenerateFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, animalList);
 
             foreach (var currAnimal in animalList.AddedAnimalList)
             {
@@ -81,7 +82,7 @@ namespace OOPProject.Utilities
         }
         public static string GameMenu(string[,] field)
         {
-            HelpfulCommands.RemoveTheFirstRowAfterTheField(field);
+            HelpfulCommands.RemoveTheNRowAfterTheField(field, 0);
 
             string commandType = Console.ReadLine();
             commandType = commandType.ToLower();

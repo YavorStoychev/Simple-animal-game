@@ -9,10 +9,10 @@ namespace OOPProject.Utilities.WaterUtilities
 {
     public class WaterCommands
     {     
-        public static string[,] GenerateWater(int radius, ref int circleFieldCount)
+        public static string[,] GenerateWater(int waterRadius, ref int circleFieldCount)
         {
 
-            int size = radius * 2 + 1;
+            int size = waterRadius * 2 + 1;
             string[,] matrix = new string[size, size];
 
             // Initialize with empty spaces
@@ -22,17 +22,17 @@ namespace OOPProject.Utilities.WaterUtilities
 
             double margin = 0.5; // Tweak this to avoid extra side points base : 0.9
 
-            for (int y = -radius; y <= radius; y++)
+            for (int y = -waterRadius; y <= waterRadius; y++)
             {
-                for (int x = -radius; x <= radius; x++)
+                for (int x = -waterRadius; x <= waterRadius; x++)
                 {
                     double value = x * x + y * y;
-                    double outerBound = (radius - margin) * (radius - margin); // Stricter boundary
+                    double outerBound = (waterRadius - margin) * (waterRadius - margin); // Stricter boundary
 
                     if (value <= outerBound) // Fills the entire circle while avoiding outer artifacts
                     {
                         circleFieldCount++;
-                        matrix[y + radius, x + radius] = EmojiList.Water;
+                        matrix[y + waterRadius, x + waterRadius] = EmojiList.Water;
                     }
                 }
             }

@@ -68,15 +68,19 @@ namespace OOPProject.Utilities.FieldUtilities
             return sb.ToString().TrimEnd();
         }
 
-       public static string[,] GeneratingFieldWithPlayerAndNpcAnimals(IAnimal player, int rowCount, int columnCount, int npcCount, ref int playerRowIndex, ref int playerColIndex, string[,] waterField, AnimalList animalList, int circleFieldCount)
+       public static string[,] GenerateFieldWithPlayerAndNpcAnimals(IAnimal player, int rowCount, int columnCount, int npcCount, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList)
         {
             string[,] field = FieldGenerator(rowCount, columnCount);
 
+            int waterRadius = rowCount / 4;
+            int waterFieldCount = 0;
+            string[,] waterField = WaterCommands.GenerateWater(waterRadius, ref waterFieldCount);
+
             WaterCommands.PlaceWaterInField(field, waterField);
 
-            PlayerCommands.GenerateRandomPlayerLocationInsideTheField(field, player, ref playerRowIndex, ref playerColIndex, ref circleFieldCount);
+            PlayerCommands.GenerateRandomPlayerLocationInsideTheField(field, player, ref playerRowIndex, ref playerColIndex, ref waterFieldCount);
 
-            NpcCommands.GenerateRandomTypeOfEntity(field, npcCount, animalList, circleFieldCount);
+            NpcCommands.GenerateRandomTypeOfEntity(field, npcCount, animalList, waterFieldCount);
 
 
             return field;

@@ -15,7 +15,7 @@ namespace OOPProject.Utilities.Messages
             = "You cannot choose that animal! You are not in {0} land! Choose another animal!";
 
         public const string TooMuchAnimalInput 
-            = "Too much animals! The max capacity animals is {0}";
+            = "Too much animals! The max capacity animals is {0}!";
 
         public const string PlayerKillCount 
             = "{0}'s kill count is {1}";
@@ -24,7 +24,16 @@ namespace OOPProject.Utilities.Messages
             = "You cannot kill that animal!";
 
         public const string CannotInterfere 
-            = "You cannot interfere with this animal!";
+            = "You cannot interfere with this {0}!";
+
+        public const string CannotGoInsideTheWater 
+            = "You cannot go inside the water!";
+
+        public const string CannotGoOutsideTheWater 
+            = "You cannot go outside the water!";
+
+        public const string SuccessfullyKilledAnAnimal
+            = "You successfully killed {0} ! Your kill counter now for {1}  is {2}.";
 
     }
 }

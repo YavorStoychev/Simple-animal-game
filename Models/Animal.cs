@@ -10,17 +10,16 @@ namespace OOPProject.Models
     public class Animal : IAnimal
     {
       
-        public Animal(int id, string emoji, int killCount, int hp, int defence, bool canSwim, string animalType, int energy, int speed, string landType )
+        public Animal(int id, string emoji, int killCount, int hp, int attack ,bool canSwim, string animalType, int energy, string landType )
         {
             Id = id;
             Emoji = emoji;
             KillCount = killCount;
             Hp = hp;
-            Defence = defence;
+            Attack = attack;
             CanSwim = canSwim;
             AnimalType = animalType;
-            Energy = energy;
-            Speed = speed;
+            Energy = energy;          
             LandType = landType;
         }
         private int id;
@@ -54,16 +53,17 @@ namespace OOPProject.Models
         public int Hp
         {
             get { return hp; }
-            protected set { hp = value; }
+            set { hp = value; }
         }
 
-        private int defence;
+        private int attack;
 
-        public int Defence
+        public int Attack
         {
-            get { return defence; }
-            protected set { defence = value; }
+            get { return attack; }
+            protected set { attack = value; }
         }
+
 
         private bool canSwim;
 
@@ -86,16 +86,8 @@ namespace OOPProject.Models
         public int Energy
         {
             get { return energy; }
-            protected set { energy = value; }
-        }
-
-        private int speed;
-
-        public int Speed
-        {
-            get { return speed; }
-            protected set { speed = value; }
-        }
+            set { energy = value; }
+        }     
 
         private string landType;
 

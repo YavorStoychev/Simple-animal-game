@@ -1,4 +1,6 @@
 ﻿using OOPProject.Models;
+using OOPProject.Utilities.EmojiImages;
+using OOPProject.Utilities.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,20 +11,13 @@ namespace OOPProject.Utilities
 {
     public class HelpfulCommands
     {
-        public static void RemoveTheFirstRowAfterTheField(string[,] field)
+        public static void RemoveTheNRowAfterTheField(string[,] field, int n)
         {
-            Console.SetCursorPosition(0, field.GetLength(0));
+            Console.SetCursorPosition(0, field.GetLength(0) + n);
             Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, field.GetLength(0));
+            Console.SetCursorPosition(0, field.GetLength(0) + n);
         }
-
-        public static void RemoveTheSecondRowAfterTheField(string[,] field)
-        {
-            Console.SetCursorPosition(0, field.GetLength(0) + 1);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, field.GetLength(0) + 1);
-        }
-
+      
 
         public static bool BattleInteraction(string[,] field, AnimalList animalList, Animal player, string enemyEmoji)
         {
@@ -30,28 +25,72 @@ namespace OOPProject.Utilities
 
             if (enemy == null)
             {
-                return true;
+                Console.WriteLine(ExceptionMessages.InvalidAnimalType);
+                return false;
             }
-
-            if ((player.LandType == enemy.LandType) || player.LandType == "Both" || enemy.LandType == "Both")
+            if ((player.LandType == enemy.LandType) || (player.LandType != enemy.LandType && player.CanSwim))
             {
-                if ((player.Hp + player.Defence) > (enemy.Hp + enemy.Defence))
+                RemoveTheNRowAfterTheField(field, 0);
+                Console.WriteLine(InputMessages.BeginOrCancelFight);
+                Console.WriteLine(string.Format(InputMessages.PlayerInfo,EmojiList.Heart,player.Hp,EmojiList.Attack,player.Attack ,EmojiList.Energy,player.Energy));
+                Console.WriteLine(string.Format(InputMessages.AreYouSureAboutTheFight,enemyEmoji));
+                Console.WriteLine(string.Format(InputMessages.AnimalInfo, EmojiList.Heart, enemy.Hp, EmojiList.Attack, enemy.Attack));
+                
+                ConsoleKeyInfo keyInput = new ConsoleKeyInfo();
+
+                keyInput = Console.ReadKey();              
+                    
+                if (keyInput.Key == ConsoleKey.Enter)
                 {
-                    Animal animal = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == player.Id);
-                    animal.KillCount++;
-                    return true;
+                    RemoveTheNRowAfterTheField(field, 0);
+                    RemoveTheNRowAfterTheField(field, 1);
+                    RemoveTheNRowAfterTheField(field, 2);
+                    RemoveTheNRowAfterTheField(field, 3);
+
+                    for (int i = 3; i >= 1; i--)
+                    {
+                        RemoveTheNRowAfterTheField(field, 0);
+                        Console.WriteLine($"Battle will begin in {i}...");
+                        Thread.Sleep(1000);
+                    }
+                  
+
+                    while (player.Hp > 0)
+                    {
+                        if (enemy.Hp <= 0)
+                        {
+                            player.KillCount++;
+
+                            Console.WriteLine(string.Format(OutputMessages.SuccessfullyKilledAnAnimal, enemy.Emoji, player.Emoji, player.KillCount));
+
+                            return true;
+                        }
+
+                        RemoveTheNRowAfterTheField(field, 1);
+                        RemoveTheNRowAfterTheField(field, 0);
+
+                        Console.WriteLine(string.Format(InputMessages.PlayerInfo, EmojiList.Heart, player.Hp, EmojiList.Attack, player.Attack, EmojiList.Energy, player.Energy));
+                        Console.WriteLine(string.Format(InputMessages.AnimalInfo, EmojiList.Heart, enemy.Hp, EmojiList.Attack, enemy.Attack));
+                                            
+                        player.Hp -= enemy.Attack;
+                        enemy.Hp -= player.Attack;
+
+                        Thread.Sleep(1500);
+                    }
+                   
                 }
-                else if ((player.Hp + player.Defence) <= (enemy.Hp + enemy.Defence))
+
+                else if (player.Hp  <= enemy.Hp)
                 {
-                    RemoveTheSecondRowAfterTheField(field);
-                    Console.WriteLine("You cannot kill that animal!");
+                    RemoveTheNRowAfterTheField(field,2);
+                    Console.WriteLine(OutputMessages.CannotKillAnimal);
                     return false;
                 }
             }
             else if (player.LandType != enemy.LandType)
             {
-                RemoveTheSecondRowAfterTheField(field);
-                Console.WriteLine("You cannot interfere with this animal!");
+                RemoveTheNRowAfterTheField(field,2);
+                Console.WriteLine(string.Format(OutputMessages.CannotInterfere,enemy.Emoji));
                 return false;
             }
 

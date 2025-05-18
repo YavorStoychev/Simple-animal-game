@@ -25,13 +25,6 @@ namespace OOPProject.Core
 
             AnimalList animalList = new AnimalList();
             
-            List<Animal> terrestrialAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == LandType.Terrestrial);
-            List<Animal> aquaticAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == LandType.Aquatic);
-            List<Animal> bothAnimals = animalList.AddedAnimalList.FindAll(x => x.LandType == "Both");
-
-            bool isPlayerInWater = false;
-            int waterFieldCount = 0;
-
             ConsoleKeyInfo keyInput = new ConsoleKeyInfo();
 
             Console.WriteLine(InputMessages.FieldSize);
@@ -39,60 +32,50 @@ namespace OOPProject.Core
            
             Console.WriteLine(InputMessages.AnimalPick);
             Console.WriteLine(PlayerCommands.AnimalChoice());
-
-            int playerAnimalId = int.Parse(Console.ReadLine());
-
-            while (playerAnimalId > animalList.AddedAnimalList.Count)
-            {
-                Console.WriteLine(OutputMessages.IncorrectAnimalSelection);
-                playerAnimalId = int.Parse(Console.ReadLine());
-            }
-
-            int radius = n / 4;
-
-            string[,] waterField = WaterCommands.GenerateWater(radius, ref waterFieldCount);
+            int playerAnimalId = PlayerCommands.GetPlayerAnimalId(animalList);
 
             Animal player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == playerAnimalId);
 
             Console.WriteLine(InputMessages.AnimalCountInput);
-
             int npcCount = NpcCommands.GenerateNpcCount(n);
-
-            
+           
             int playerRowIndex = 0;
             int playerColIndex = 0;
+            bool isPlayerInWater = false;
 
             string[,] field
-                = FieldCommands.GeneratingFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, waterFieldCount);
+                = FieldCommands.GenerateFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, animalList);
 
             Console.Clear();
             Console.WriteLine(FieldCommands.FieldOutput(field));
             Console.WriteLine(InputMessages.EnterACommand);
+            Console.WriteLine(string.Format(InputMessages.PlayerInfo,EmojiList.Heart,player.Hp,EmojiList.Attack,player.Attack ,EmojiList.Energy,player.Energy));
 
             while (true)
             {
                 keyInput = Console.ReadKey();
 
-                HelpfulCommands.RemoveTheSecondRowAfterTheField(field);
+                HelpfulCommands.RemoveTheNRowAfterTheField(field,2);
                
-                    switch (keyInput.Key)
-                    {
-                        case ConsoleKey.UpArrow:
-                            field = PlayerMove.Up(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, ref isPlayerInWater);
-                            break;
-                        case ConsoleKey.DownArrow:
-                            field = PlayerMove.Down(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, ref isPlayerInWater);
-                            break;
-                        case ConsoleKey.RightArrow:
-                            field = PlayerMove.Right(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, ref isPlayerInWater);
-                            break;
-                        case ConsoleKey.LeftArrow:
-                            field = PlayerMove.Left(field, player, ref playerRowIndex, ref playerColIndex, animalList, terrestrialAnimals, aquaticAnimals, bothAnimals, ref isPlayerInWater);
-                            break;
-                    }
-
+                switch (keyInput.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        field = PlayerMove.Up(field, player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
+                        break;
+                    case ConsoleKey.DownArrow:
+                        field = PlayerMove.Down(field, player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
+                        break;
+                    case ConsoleKey.RightArrow:
+                        field = PlayerMove.Right(field, player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        field = PlayerMove.Left(field, player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
+                        break;
+                }
                 if (keyInput.Key == ConsoleKey.Enter)
-                {                
+                {
+                    HelpfulCommands.RemoveTheNRowAfterTheField(field,1);
+
                     string commandType = GameOptions.GameMenu(field);
               
                     switch (commandType)
@@ -101,23 +84,21 @@ namespace OOPProject.Core
                             field = GameOptions.ChangePlayerAnimal(field, ref player, ref playerRowIndex, ref playerColIndex, animalList);
                             break;
                         case "2":
-                            field = GameOptions.ResetGame(field, player, n, npcCount, ref playerRowIndex, ref playerColIndex, waterField, animalList, waterFieldCount, ref isPlayerInWater);
+                            field = GameOptions.ResetGame(field, player, n, npcCount, ref playerRowIndex, ref playerColIndex, animalList,  ref isPlayerInWater);
                             break;
                         case "3":
                             GameOptions.EndGame(animalList);
                             return;
                     }
                 }
-
                 Console.SetCursorPosition(0, 0);
 
                 Console.WriteLine(FieldCommands.FieldOutput(field));
 
                 Console.WriteLine(InputMessages.EnterACommand);
+                Console.WriteLine(string.Format(InputMessages.PlayerInfo, EmojiList.Heart, player.Hp, EmojiList.Attack, player.Attack, EmojiList.Energy, player.Energy));
             }
-        }
-
-        
+        }        
     }
 }
     

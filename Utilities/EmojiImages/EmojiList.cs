@@ -23,5 +23,8 @@ namespace OOPProject.Utilities.EmojiImages
 
 
         public const string Water = "🔵";
+        public const string Heart = "❤️";
+        public const string Attack = "⚔️";
+        public const string Energy = "⚡";
     }
 }
