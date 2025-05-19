@@ -3,6 +3,7 @@ using OOPProject.Movement;
 using OOPProject.Utilities;
 using OOPProject.Utilities.EmojiImages;
 using OOPProject.Utilities.Messages;
+using OOPProject.Utilities.PlayerUtilities;
 using OOPProject.Utilities.WaterUtilities;
 using System;
 using System.Collections.Generic;
@@ -14,20 +15,19 @@ namespace OOPProject.Movement
 {
     public class PlayerMove
     {       
-        public static string[,] Up(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex,AnimalList animalList , ref bool isPlayerInWater)
+        public static string[,] Up(string[,] field, ref Animal player, ref int playerRowIndex, ref int playerColIndex,AnimalList animalList , ref bool isPlayerInWater)
         {
             int tempPlayerRowIndex = playerRowIndex;
             int tempPlayerColIndex = playerColIndex;
             bool tempIsPlayerInWater = isPlayerInWater;
 
-            string nextElement = field[tempPlayerRowIndex - 1, tempPlayerColIndex];
 
             if (player.LandType == LandType.Terrestrial)
             {
 
                 if (tempPlayerRowIndex - 1 > 0)
                 {                   
-                    TerrestrialMove(field, player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, -1, 0, ref tempIsPlayerInWater);
+                    TerrestrialMove(field, ref player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, -1, 0, ref tempIsPlayerInWater);
                 }
                 else
                 {
@@ -38,15 +38,15 @@ namespace OOPProject.Movement
             }
             else if (player.LandType == LandType.Aquatic)
             {
-                AquaticMove(field,player,animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, -1, 0);            
-            }
+                AquaticMove(field,ref player,animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, -1, 0);            
+            }           
 
             playerRowIndex = tempPlayerRowIndex;
             playerColIndex = tempPlayerColIndex;
             isPlayerInWater = tempIsPlayerInWater;
             return field;
         }
-        public static string[,] Down(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList,  ref bool isPlayerInWater)
+        public static string[,] Down(string[,] field, ref Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList,  ref bool isPlayerInWater)
         {
             int tempPlayerRowIndex = playerRowIndex;
             int tempPlayerColIndex = playerColIndex;
@@ -57,7 +57,7 @@ namespace OOPProject.Movement
 
                 if (tempPlayerRowIndex + 2 < field.GetLength(0))
                 {
-                    TerrestrialMove(field, player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 1, 0, ref tempIsPlayerInWater);
+                    TerrestrialMove(field, ref player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 1, 0, ref tempIsPlayerInWater);
                 }
                 else
                 {
@@ -68,15 +68,16 @@ namespace OOPProject.Movement
             }         
             else if (player.LandType == LandType.Aquatic)
             {
-                AquaticMove(field, player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 1, 0);
+                AquaticMove(field, ref player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 1, 0);
             }
+          
 
             playerRowIndex = tempPlayerRowIndex;
             playerColIndex = tempPlayerColIndex;
             isPlayerInWater = tempIsPlayerInWater;
             return field;
         }
-        public static string[,] Right(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, ref bool isPlayerInWater)
+        public static string[,] Right(string[,] field, ref Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, ref bool isPlayerInWater)
         {
             int tempPlayerRowIndex = playerRowIndex;
             int tempPlayerColIndex = playerColIndex;
@@ -87,7 +88,7 @@ namespace OOPProject.Movement
 
                 if (tempPlayerColIndex + 2 < field.GetLength(0))
                 {
-                    TerrestrialMove(field, player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 0, 1, ref tempIsPlayerInWater);
+                    TerrestrialMove(field,ref player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 0, 1, ref tempIsPlayerInWater);
                 }
                 else
                 {
@@ -98,15 +99,17 @@ namespace OOPProject.Movement
             }
             else if (player.LandType == LandType.Aquatic)
             {
-                AquaticMove(field, player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 0, 1);
+                AquaticMove(field, ref player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 0, 1);
             }
+
+           
 
             playerRowIndex = tempPlayerRowIndex;
             playerColIndex = tempPlayerColIndex;
             isPlayerInWater = tempIsPlayerInWater;
             return field;
         }
-        public static string[,] Left(string[,] field, Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, ref bool isPlayerInWater)
+        public static string[,] Left(string[,] field, ref Animal player, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList, ref bool isPlayerInWater)
         {
             int tempPlayerRowIndex = playerRowIndex;
             int tempPlayerColIndex = playerColIndex;
@@ -117,7 +120,7 @@ namespace OOPProject.Movement
 
                 if (tempPlayerColIndex - 1 > 0)
                 {
-                    TerrestrialMove(field, player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 0, -1, ref tempIsPlayerInWater);
+                    TerrestrialMove(field, ref player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 0, -1, ref tempIsPlayerInWater);
                 }
                 else
                 {
@@ -128,8 +131,8 @@ namespace OOPProject.Movement
             }
             else if (player.LandType == LandType.Aquatic)
             {
-                AquaticMove(field, player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 0, -1);
-            }
+                AquaticMove(field, ref player, animalList, ref tempPlayerRowIndex, ref tempPlayerColIndex, 0, -1);
+            }            
 
             playerRowIndex = tempPlayerRowIndex;
             playerColIndex = tempPlayerColIndex;
@@ -137,7 +140,7 @@ namespace OOPProject.Movement
             return field;
         }
        
-        private static void TerrestrialMove(string[,] field, Animal player, AnimalList animalList ,ref int playerRowIndex, ref int playerColIndex, int rowMove, int colMove, ref bool isPlayerInWater)
+        private static void TerrestrialMove(string[,] field, ref Animal player, AnimalList animalList ,ref int playerRowIndex, ref int playerColIndex, int rowMove, int colMove, ref bool isPlayerInWater)
         {        
 
             int newRow = playerRowIndex + rowMove;
@@ -158,14 +161,26 @@ namespace OOPProject.Movement
 
             if (animalList.AddedAnimalList.Any(a => a.Emoji == nextElement))
             {
-                if (!HelpfulCommands.BattleInteraction(field, animalList, player, nextElement))
+                if (!HelpfulCommands.BattleInteraction(field, animalList, ref player, ref playerRowIndex, ref playerColIndex, nextElement))
                 {
                     return;
                 }
             }
+            else
+            {
+                player.ConsumeEnergy();
 
-            player.Energy -= 5;
+                if (player.Energy <= 0)
+                {
+                    HelpfulCommands.RemoveTheNRowAfterTheField(field, 2);
+                    HelpfulCommands.RemoveTheNRowAfterTheField(field, 1);
+                    HelpfulCommands.RemoveTheNRowAfterTheField(field, 0);
 
+                    field = GameOptions.ChangePlayerAnimal(field, ref player, ref playerRowIndex, ref playerColIndex, animalList);
+                    return;
+                }
+
+            }
 
 
             field[playerRowIndex, playerColIndex] = isPlayerInWater ? EmojiList.Water : "  ";
@@ -178,10 +193,10 @@ namespace OOPProject.Movement
                 .Any(a => a.Emoji == nextElement);
         }
 
-        private static void AquaticMove(string[,] field, Animal player, AnimalList animalList, ref int tempPlayerRowIndex, ref int tempPlayerColIndex, int rowMove, int colMove)
+        private static void AquaticMove(string[,] field, ref Animal player, AnimalList animalList, ref int playerRowIndex, ref int playerColIndex, int rowMove, int colMove)
         {
-            int newRow = tempPlayerRowIndex + rowMove;
-            int newCol = tempPlayerColIndex + colMove;
+            int newRow = playerRowIndex + rowMove;
+            int newCol = playerColIndex + colMove;
 
             string nextElement = field[newRow, newCol];
 
@@ -193,16 +208,31 @@ namespace OOPProject.Movement
             }
             if (animalList.AddedAnimalList.Any(a => a.Emoji == nextElement))
             {
-                if (!HelpfulCommands.BattleInteraction(field, animalList, player, nextElement))
+                if (!HelpfulCommands.BattleInteraction(field, animalList, ref player, ref playerRowIndex, ref playerColIndex, nextElement))
                 {
                     return;
                 }
             }
+            else
+            {
+                player.ConsumeEnergy();
 
-            field[tempPlayerRowIndex, tempPlayerColIndex] = EmojiList.Water;
-            tempPlayerRowIndex = newRow;
-            tempPlayerColIndex = newCol;
-            field[tempPlayerRowIndex, tempPlayerColIndex] = player.Emoji;
+                if (player.Energy <= 0)
+                {
+                    HelpfulCommands.RemoveTheNRowAfterTheField(field, 2);
+                    HelpfulCommands.RemoveTheNRowAfterTheField(field, 1);
+                    HelpfulCommands.RemoveTheNRowAfterTheField(field, 0);
+
+                    field = GameOptions.ChangePlayerAnimal(field, ref player, ref playerRowIndex, ref playerColIndex, animalList);
+                    return;
+                }
+
+            }
+
+            field[playerRowIndex, playerColIndex] = EmojiList.Water;
+            playerRowIndex = newRow;
+            playerColIndex = newCol;
+            field[playerRowIndex, playerColIndex] = player.Emoji;
         }
     }
 }

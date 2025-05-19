@@ -31,5 +31,8 @@ namespace OOPProject.Utilities.Messages
 
         public const string BeginOrCancelFight
             = "Press 'Enter' to begin the battle or 'Esc' to cancel it.";
+
+        public const string BeginBattle 
+            = "Battle will begin in {0}...";
     }
 }

@@ -73,7 +73,7 @@ namespace OOPProject.Utilities.PlayerUtilities
             int playerAnimalId = int.Parse(Console.ReadLine());
 
             while (playerAnimalId > animalList.AddedAnimalList.Count)
-            {
+            {                
                 Console.WriteLine(OutputMessages.IncorrectAnimalSelection);
                 playerAnimalId = int.Parse(Console.ReadLine());
             }

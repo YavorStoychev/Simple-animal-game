@@ -19,9 +19,9 @@ namespace OOPProject.Utilities
         }
       
 
-        public static bool BattleInteraction(string[,] field, AnimalList animalList, Animal player, string enemyEmoji)
+        public static bool BattleInteraction(string[,] field, AnimalList animalList,ref Animal player, ref int playerRowIndex, ref int playerColIndex, string enemyEmoji)
         {
-            Animal enemy = animalList.AddedAnimalList.FirstOrDefault(x => x.Emoji == enemyEmoji);
+            Animal enemy = animalList.GetClonedAnimalByEmoji(enemyEmoji);
 
             if (enemy == null)
             {
@@ -31,6 +31,7 @@ namespace OOPProject.Utilities
             if ((player.LandType == enemy.LandType) || (player.LandType != enemy.LandType && player.CanSwim))
             {
                 RemoveTheNRowAfterTheField(field, 0);
+
                 Console.WriteLine(InputMessages.BeginOrCancelFight);
                 Console.WriteLine(string.Format(InputMessages.PlayerInfo,EmojiList.Heart,player.Hp,EmojiList.Attack,player.Attack ,EmojiList.Energy,player.Energy));
                 Console.WriteLine(string.Format(InputMessages.AreYouSureAboutTheFight,enemyEmoji));
@@ -38,54 +39,76 @@ namespace OOPProject.Utilities
                 
                 ConsoleKeyInfo keyInput = new ConsoleKeyInfo();
 
-                keyInput = Console.ReadKey();              
-                    
-                if (keyInput.Key == ConsoleKey.Enter)
-                {
-                    RemoveTheNRowAfterTheField(field, 0);
-                    RemoveTheNRowAfterTheField(field, 1);
-                    RemoveTheNRowAfterTheField(field, 2);
-                    RemoveTheNRowAfterTheField(field, 3);
+                keyInput = Console.ReadKey();
 
-                    for (int i = 3; i >= 1; i--)
+                while (keyInput.Key != ConsoleKey.Enter || keyInput.Key != ConsoleKey.Escape)
+                {
+                    if (keyInput.Key == ConsoleKey.Enter)
                     {
                         RemoveTheNRowAfterTheField(field, 0);
-                        Console.WriteLine($"Battle will begin in {i}...");
-                        Thread.Sleep(1000);
-                    }
-                  
+                        RemoveTheNRowAfterTheField(field, 1);
+                        RemoveTheNRowAfterTheField(field, 2);
+                        RemoveTheNRowAfterTheField(field, 3);
 
-                    while (player.Hp > 0)
-                    {
-                        if (enemy.Hp <= 0)
+                        for (int i = 3; i >= 1; i--)
                         {
-                            player.KillCount++;
-
-                            Console.WriteLine(string.Format(OutputMessages.SuccessfullyKilledAnAnimal, enemy.Emoji, player.Emoji, player.KillCount));
-
-                            return true;
+                            RemoveTheNRowAfterTheField(field, 0);
+                            Console.WriteLine(string.Format(InputMessages.BeginBattle,i));
+                            Thread.Sleep(1000);
                         }
 
-                        RemoveTheNRowAfterTheField(field, 1);
-                        RemoveTheNRowAfterTheField(field, 0);
+                        while (player.Hp > 0)
+                        {
+                            if (enemy.Hp <= 0)
+                            {
+                                player.KillCount++;
+                                player.RecoverAfterBattle();
+                                Console.WriteLine(string.Format(OutputMessages.SuccessfullyKilledAnAnimal, enemy.Emoji, player.Emoji, player.KillCount));
+                                return true;
+                            }
+                            
 
-                        Console.WriteLine(string.Format(InputMessages.PlayerInfo, EmojiList.Heart, player.Hp, EmojiList.Attack, player.Attack, EmojiList.Energy, player.Energy));
-                        Console.WriteLine(string.Format(InputMessages.AnimalInfo, EmojiList.Heart, enemy.Hp, EmojiList.Attack, enemy.Attack));
-                                            
-                        player.Hp -= enemy.Attack;
-                        enemy.Hp -= player.Attack;
+                            RemoveTheNRowAfterTheField(field, 1);
+                            RemoveTheNRowAfterTheField(field, 0);
 
-                        Thread.Sleep(1500);
+                            Console.WriteLine(string.Format(InputMessages.PlayerInfo, EmojiList.Heart, player.Hp, EmojiList.Attack, player.Attack, EmojiList.Energy, player.Energy));
+                            Console.WriteLine(string.Format(InputMessages.AnimalInfo, EmojiList.Heart, enemy.Hp, EmojiList.Attack, enemy.Attack));
+
+                            player.Hp -= enemy.Attack;
+                            enemy.Hp -= player.Attack;
+
+                            Thread.Sleep(1500);
+                        }
+                        if (player.Hp <= 0)
+                        {
+                            RemoveTheNRowAfterTheField(field, 2);
+                            RemoveTheNRowAfterTheField(field, 1);
+                            RemoveTheNRowAfterTheField(field, 0);
+
+                            Console.WriteLine(string.Format(OutputMessages.YouGotKilled, enemy.Emoji, player.Emoji));
+                            Thread.Sleep(2000);
+
+                            GameOptions.ChangePlayerAnimal(field, ref player, ref playerRowIndex, ref playerColIndex, animalList);
+                            return false;
+                        }
+
                     }
-                   
+                    else if (keyInput.Key == ConsoleKey.Escape)
+                    {
+                        RemoveTheNRowAfterTheField(field, 3);
+                        RemoveTheNRowAfterTheField(field, 2);
+                        return false;
+                    }
+                    keyInput = Console.ReadKey();
                 }
+            
 
-                else if (player.Hp  <= enemy.Hp)
-                {
-                    RemoveTheNRowAfterTheField(field,2);
-                    Console.WriteLine(OutputMessages.CannotKillAnimal);
-                    return false;
-                }
+                //if (player.Hp  <= enemy.Hp)
+                //{
+                //    RemoveTheNRowAfterTheField(field,2);
+                //    Console.WriteLine(OutputMessages.CannotKillAnimal);
+                //    return false;
+                //}
             }
             else if (player.LandType != enemy.LandType)
             {

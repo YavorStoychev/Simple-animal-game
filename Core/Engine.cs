@@ -60,16 +60,16 @@ namespace OOPProject.Core
                 switch (keyInput.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        field = PlayerMove.Up(field, player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
+                        field = PlayerMove.Up(field,ref player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
                         break;
                     case ConsoleKey.DownArrow:
-                        field = PlayerMove.Down(field, player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
+                        field = PlayerMove.Down(field,ref player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
                         break;
                     case ConsoleKey.RightArrow:
-                        field = PlayerMove.Right(field, player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
+                        field = PlayerMove.Right(field,ref player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
                         break;
                     case ConsoleKey.LeftArrow:
-                        field = PlayerMove.Left(field, player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
+                        field = PlayerMove.Left(field,ref player, ref playerRowIndex, ref playerColIndex, animalList, ref isPlayerInWater);
                         break;
                 }
                 if (keyInput.Key == ConsoleKey.Enter)
@@ -91,11 +91,13 @@ namespace OOPProject.Core
                             return;
                     }
                 }
+
                 Console.SetCursorPosition(0, 0);
 
                 Console.WriteLine(FieldCommands.FieldOutput(field));
 
                 Console.WriteLine(InputMessages.EnterACommand);
+                HelpfulCommands.RemoveTheNRowAfterTheField(field,1);
                 Console.WriteLine(string.Format(InputMessages.PlayerInfo, EmojiList.Heart, player.Hp, EmojiList.Attack, player.Attack, EmojiList.Energy, player.Energy));
             }
         }        

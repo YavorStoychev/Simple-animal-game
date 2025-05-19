@@ -35,5 +35,14 @@ namespace OOPProject.Utilities.Messages
         public const string SuccessfullyKilledAnAnimal
             = "You successfully killed {0} ! Your kill counter now for {1}  is {2}.";
 
+        public const string DeadFromExhaustion 
+            = "{0} died from exhaustion!";
+
+        public const string YouGotKilled 
+            = "{0} killed your {1}!";
+
+        public const string AlreadyDead 
+            = "{0} is already dead! Chose different animal!";
+
     }
 }

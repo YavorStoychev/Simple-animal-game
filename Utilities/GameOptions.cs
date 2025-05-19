@@ -21,10 +21,24 @@ namespace OOPProject.Utilities
 
             HelpfulCommands.RemoveTheNRowAfterTheField(field,0);
 
-            int animalId = int.Parse(Console.ReadLine());
+            int animalId = PlayerCommands.GetPlayerAnimalId(animalList);
+
 
             player = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == animalId);
 
+            while (player.Energy <= 0 || player.Hp <= 0)
+            {
+                HelpfulCommands.RemoveTheNRowAfterTheField(field, 4);
+                HelpfulCommands.RemoveTheNRowAfterTheField(field, 3);
+                HelpfulCommands.RemoveTheNRowAfterTheField(field, 2);
+                HelpfulCommands.RemoveTheNRowAfterTheField(field, 1);
+                HelpfulCommands.RemoveTheNRowAfterTheField(field, 0);
+
+                Console.WriteLine(string.Format(OutputMessages.AlreadyDead,player.Emoji));
+                Thread.Sleep(2000);
+                HelpfulCommands.RemoveTheNRowAfterTheField(field,0);
+                ChangePlayerAnimal(field,ref player,ref playerRowIndex,ref playerColIndex,animalList);
+            }
 
             while (!WaterCommands.IsPlayerInWater(field, playerRowIndex, playerColIndex) && player.LandType == LandType.Aquatic)
             {
@@ -58,6 +72,8 @@ namespace OOPProject.Utilities
 
         public static string[,] ResetGame(string[,] field, Animal player, int n, int npcCount, ref int playerRowIndex, ref int playerColIndex, AnimalList animalList,ref bool isPlayerInWater)
         {
+            animalList = new AnimalList();
+
             field = FieldCommands.GenerateFieldWithPlayerAndNpcAnimals(player, n, n, npcCount, ref playerRowIndex, ref playerColIndex, animalList);
 
             foreach (var currAnimal in animalList.AddedAnimalList)

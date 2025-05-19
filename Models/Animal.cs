@@ -1,4 +1,6 @@
 ﻿using OOPProject.Models.Contracts;
+using OOPProject.Utilities;
+using OOPProject.Utilities.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,10 @@ namespace OOPProject.Models
 {
     public class Animal : IAnimal
     {
-      
-        public Animal(int id, string emoji, int killCount, int hp, int attack ,bool canSwim, string animalType, int energy, string landType )
+        private readonly int maxHp;
+        private readonly int maxEnergy;
+
+        public Animal(int id, string emoji, int killCount, int hp, int attack ,bool canSwim, string animalType, int energy, int energyConsumption ,string landType )
         {
             Id = id;
             Emoji = emoji;
@@ -19,8 +23,13 @@ namespace OOPProject.Models
             Attack = attack;
             CanSwim = canSwim;
             AnimalType = animalType;
-            Energy = energy;          
+            Energy = energy;
+            EnergyConsumption = energyConsumption;
             LandType = landType;
+
+
+            maxHp = hp;
+            maxEnergy = energy;
         }
         private int id;
 
@@ -46,8 +55,7 @@ namespace OOPProject.Models
             get { return emoji; }
             protected set { emoji = value; }
         }
-
-
+          
         private int hp;
 
         public int Hp
@@ -87,7 +95,15 @@ namespace OOPProject.Models
         {
             get { return energy; }
             set { energy = value; }
-        }     
+        }
+
+        private int energyConsumption;
+
+        public int EnergyConsumption
+        {
+            get { return energyConsumption; }
+            set { energyConsumption = value; }
+        }
 
         private string landType;
 
@@ -97,6 +113,42 @@ namespace OOPProject.Models
             protected set { landType = value; }
         }
 
-       
+
+
+        public Animal Clone()
+        {
+            return new Animal(
+                this.Id,
+                this.Emoji,
+                this.KillCount,
+                this.Hp,
+                this.Attack,
+                this.CanSwim,
+                this.AnimalType,
+                this.Energy,
+                this.EnergyConsumption,
+                this.LandType
+            );
+        }
+
+
+        public void RecoverAfterBattle()
+        {
+            Hp = Math.Min(Hp + 50, maxHp);
+
+            Energy = maxEnergy;
+        }
+
+        public void ConsumeEnergy()
+        {
+            this.Energy -= this.energyConsumption;
+
+            if (Energy <= 0)
+            {
+                Console.WriteLine(string.Format(OutputMessages.DeadFromExhaustion, Emoji));
+                Thread.Sleep(3000);
+                return;
+            }
+        }
     }
 }
