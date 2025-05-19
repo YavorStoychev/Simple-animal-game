@@ -101,14 +101,7 @@ namespace OOPProject.Utilities
                     }
                     keyInput = Console.ReadKey();
                 }
-            
-
-                //if (player.Hp  <= enemy.Hp)
-                //{
-                //    RemoveTheNRowAfterTheField(field,2);
-                //    Console.WriteLine(OutputMessages.CannotKillAnimal);
-                //    return false;
-                //}
+                           
             }
             else if (player.LandType != enemy.LandType)
             {

@@ -27,58 +27,19 @@ namespace OOPProject.Utilities.NpcUtilities
             return npcCount;
         }
 
-       //public static void PutCurrEntityInsideTheField(string[,] field, ref int npcRowIndex, ref int npcColIndex, ref IAnimal animal, ref int circleFieldCount, AnimalList animalList)
-       // {
-       //     Random random = new Random();
-       //
-       //     char border = (char)0x25A0;
-       //
-       //     rewritingTheindexes:
-       //
-       //     while (field[npcRowIndex, npcColIndex] != "  ")
-       //     {
-       //         if (field[npcRowIndex, npcColIndex] == EmojiList.Water && (animal.LandType == LandType.Aquatic) && field[npcRowIndex, npcColIndex] != border.ToString() + " ")
-       //         {
-       //             circleFieldCount--;
-       //             break;
-       //         }
-       //
-       //         npcRowIndex = random.Next(1, field.GetLength(0) - 1);
-       //         npcColIndex = random.Next(1, field.GetLength(1) - 1);
-       //     }
-       //
-       //     if (field[npcRowIndex, npcColIndex] == "  " && animal.LandType == LandType.Aquatic)
-       //     {
-       //         if (circleFieldCount == 0)
-       //         {
-       //             while (animal.LandType == LandType.Aquatic)
-       //             {
-       //                 int newAnimalId = random.Next(1, 13);
-       //                 animal = animalList.AddedAnimalList.FirstOrDefault(x => x.Id == newAnimalId);
-       //             }
-       //         }
-       //
-       //         npcRowIndex = random.Next(1, field.GetLength(0) - 1);
-       //         npcColIndex = random.Next(1, field.GetLength(1) - 1);
-       //
-       //         goto rewritingTheindexes;
-       //     }
-       // }
-
-        public static void PutCurrEntityInsideTheField(string[,] field, ref int npcRowIndex, ref int npcColIndex, ref Animal animal, ref int circleFieldCount, AnimalList animalList)
+        public static void PutCurrEntityInsideTheField(string[,] field, ref int npcRowIndex, ref int npcColIndex, ref Animal animal, ref int waterFieldCount, AnimalList animalList)
         {
             Random random = new Random();
 
             char border = (char)0x25A0;
 
-            rewritingTheindexes:
 
 
             while (field[npcRowIndex, npcColIndex] != "  ")
             {
                 if (field[npcRowIndex, npcColIndex] == EmojiList.Water && (animal.LandType == LandType.Aquatic || animal.CanSwim) && field[npcRowIndex, npcColIndex] != border.ToString() + " ")
                 {
-                    circleFieldCount--;
+                    waterFieldCount--;
                     break;
                 }
 
@@ -88,7 +49,7 @@ namespace OOPProject.Utilities.NpcUtilities
 
             if (field[npcRowIndex, npcColIndex] == "  " && animal.LandType == LandType.Aquatic)
             {
-                if (circleFieldCount == 0)
+                if (waterFieldCount == 0)
                 {
                     while (animal.LandType == LandType.Aquatic)
                     {
@@ -100,7 +61,7 @@ namespace OOPProject.Utilities.NpcUtilities
                 npcRowIndex = random.Next(1, field.GetLength(0) - 1);
                 npcColIndex = random.Next(1, field.GetLength(1) - 1);
 
-                goto rewritingTheindexes;
+                PutCurrEntityInsideTheField(field,ref npcRowIndex, ref npcColIndex, ref animal, ref waterFieldCount, animalList);
             }
         }
 
